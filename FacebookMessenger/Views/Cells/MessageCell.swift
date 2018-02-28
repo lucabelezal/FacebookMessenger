@@ -8,9 +8,29 @@
 
 import UIKit
 
-class FriendCell: BaseCell {
+class MessageCell: BaseCell {
     
-    let profileImage: UIImageView = {
+    var message: Message? {
+        didSet {
+            nameLabel.text = message?.friend?.name
+            messageLabel.text = message?.text
+            
+            if let profileImageName = message?.friend?.profileImageName {
+                profileImageView.image = UIImage(named: profileImageName)
+            }
+            
+            if let date = message?.date {
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "h:mm a"
+                
+                timeLabel.text = dateFormatter.string(from: date as Date)
+            }
+            
+        }
+    }
+    
+    let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 34
@@ -47,7 +67,7 @@ class FriendCell: BaseCell {
         return label
     }()
     
-    let hasReadImage: UIImageView = {
+    let hasReadImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 10
@@ -57,16 +77,18 @@ class FriendCell: BaseCell {
     
     override func setupViews() {
         
-        addSubview(profileImage)
+        addSubview(profileImageView)
         addSubview(dividerLineView)
         setupContainerView()
         
-        profileImage.image = UIImage(named: "zuckprofile")
-        hasReadImage.image = UIImage(named: "zuckprofile")
+        profileImageView.image = UIImage(named: "zuckprofile")
+        hasReadImageView.image = UIImage(named: "zuckprofile")
         
-        addConstraintsWithFormat(format: "H:|-12-[v0(68)]", views: profileImage)
-        addConstraintsWithFormat(format: "V:|-12-[v0(68)]", views: profileImage)
-        addConstraint(NSLayoutConstraint(item: profileImage, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0))
+        
+        addConstraintsWithFormat(format: "H:|-12-[v0(68)]", views: profileImageView)
+        addConstraintsWithFormat(format: "V:[v0(68)]", views: profileImageView)
+        
+        addConstraint(NSLayoutConstraint(item: profileImageView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0))
         
         addConstraintsWithFormat(format: "H:|-82-[v0]|", views: dividerLineView)
         addConstraintsWithFormat(format: "V:[v0(1)]|", views: dividerLineView)
@@ -82,18 +104,19 @@ class FriendCell: BaseCell {
         addConstraintsWithFormat(format: "V:[v0(50)]", views: containerView)
         addConstraint(NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0))
         
-        
         containerView.addSubview(nameLabel)
         containerView.addSubview(messageLabel)
         containerView.addSubview(timeLabel)
-        containerView.addSubview(hasReadImage)
+        containerView.addSubview(hasReadImageView)
         
-        addConstraintsWithFormat(format: "H:|[v0][v1(70)]-12-|", views: nameLabel, timeLabel)
-        addConstraintsWithFormat(format: "H:|[v0]-8-[v1(20)]-12-|", views: messageLabel, hasReadImage)
+        containerView.addConstraintsWithFormat(format: "H:|[v0][v1(80)]-12-|", views: nameLabel, timeLabel)
+        containerView.addConstraintsWithFormat(format: "V:|[v0][v1(24)]|", views: nameLabel, messageLabel)
         
-        addConstraintsWithFormat(format: "V:|[v0][v1(24)]|", views: nameLabel, messageLabel)
-        addConstraintsWithFormat(format: "V:|[v0(24)]|", views: timeLabel)
-        addConstraintsWithFormat(format: "V:[v0(20)]|", views: hasReadImage)
+        containerView.addConstraintsWithFormat(format: "H:|[v0]-8-[v1(20)]-12-|", views: messageLabel, hasReadImageView)
+        
+        containerView.addConstraintsWithFormat(format: "V:|[v0(24)]", views: timeLabel)
+        
+        containerView.addConstraintsWithFormat(format: "V:[v0(20)]|", views: hasReadImageView)
         
         
     }
